@@ -1,16 +1,12 @@
 ﻿using Destiny2.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
 
 namespace Destiny2.WebServer
@@ -19,6 +15,8 @@ namespace Destiny2.WebServer
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             var assemblyLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var destinyDataZipFilePath = $"{assemblyLocation}/destinyData.zip";
             var destinyDataUnpackedDir = $"{assemblyLocation}/destinyDataUnpacked";
@@ -45,30 +43,9 @@ namespace Destiny2.WebServer
 
             databaseFile = Directory.GetFiles(destinyDataUnpackedDir).Single();
 
-
-
-            //using (var conn = new SqliteConnection($@"Data Source={databaseFile}"))
-            //using (var command = conn.CreateCommand())
-            //{
-            //    conn.Open();
-            //    command.CommandText = query;
-            //    //command.Parameters.Add(new SqliteParameter("", ""));
-            //    var reader = command.ExecuteReader();
-            //    var itemDictionary = new Dictionary<long, JObject>();
-            //    while (reader.Read())
-            //    {
-            //        for (var i = 0; i < reader.FieldCount; i++)
-            //        {
-
-            //        }
-            //        var temp1 = reader[0];
-            //        var temp2 = reader[1];
-            //        var json = JObject.Parse(temp2 as string);
-            //        var hash = (long)json["hash"];
-            //        itemDictionary.Add(hash, json);
-            //    }
-            //    conn.Close();
-            //}
+            var connectionString = $@"Data Source={databaseFile}";
+            var dataLayer = new SqlLiteDataLayer(connectionString);
+            var results = dataLayer.ExecuteQuery(query).ToList();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -80,9 +57,9 @@ namespace Destiny2.WebServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Run(async (context) =>
+            app.UseMvc(builder =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                builder.MapRoute("Api", "Api/{controller}/{action}/{id?}");
             });
         }
 
