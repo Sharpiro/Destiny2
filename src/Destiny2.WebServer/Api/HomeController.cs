@@ -2,6 +2,11 @@
 {
     public class HomeController
     {
+        public HomeController()
+        {
+
+        }
+
         public string Get()
         {
             return "teststring";
