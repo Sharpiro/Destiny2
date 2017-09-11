@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Destiny2.WebServer", "Desti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Destiny2.Core", "Destiny2.Core\Destiny2.Core.csproj", "{71C8199F-32B3-43EA-B9BB-79D98E123873}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Destiny2", "Destiny2\Destiny2.csproj", "{76610B92-58CD-4B7E-BDD6-621E93A88ED5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Destiny2", "Destiny2\Destiny2.csproj", "{76610B92-58CD-4B7E-BDD6-621E93A88ED5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
