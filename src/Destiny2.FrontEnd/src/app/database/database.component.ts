@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from "./database.service";
 import * as idbKeyval from 'idb-keyval';
+import { ResponseContentType } from "@angular/http"
+import { ZipService } from "../shared/zip.service";
+
+declare var zip;
 
 @Component({
   selector: 'app-database',
@@ -9,42 +13,26 @@ import * as idbKeyval from 'idb-keyval';
 })
 export class DatabaseComponent implements OnInit {
 
-  constructor(private databaseService: DatabaseService) { }
+  constructor(private databaseService: DatabaseService, private zipService: ZipService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     // const url = "https://sharpirotestfunctions.azurewebsites.net/api/FacebookCallback";
     // const url = "https://www.bungie.net/Platform/Destiny2/Manifest/";
-    const url = "https://www.bungie.net/common/destiny2_content/sqlite/en/world_sql_content_281de46e3cd73e5747595936fd2dffa9.content";
+    // const url = "https://www.bungie.net/common/destiny2_content/sqlite/en/world_sql_content_281de46e3cd73e5747595936fd2dffa9.content";
+    const url = "http://localhost:4200/assets/test.zip";
 
-    // var temp = [1, 2, 3];
-    // const typedArray = new Uint8Array(temp);
-    // const typedArrayString = typedArray.toString();
-    // console.log(typedArrayString);
+    zip.workerScriptsPath = "/assets/lib/zipjs/";
 
-    // var base64 = btoa(typedArrayString);
-    // var backToNormal = atob(base64);
-    // console.log(base64);
-    // console.log(backToNormal);
-
-    // localStorage.setItem("test", "test");
-
-    this.databaseService.getData(url).subscribe(res => {
-      // console.log(res);
-      var blob = res.arrayBuffer();
-      var fileReader = new FileReader();
-      // fileReader.readAsArrayBuffer(blob);
-      // var temp = fileReader.result;
-      // console.log(temp);
-
-
-      const typedArray = new Uint8Array(blob);
-      idbKeyval.get("test").then(val => console.log(val));
-      // idbKeyval.set("test", typedArray).then(resX => {
-      //   console.log("added to storage?");
-      // });
-      // const base64 = btoa(typedArray.toString())
-      // localStorage.setItem("test", base64);
-      // console.log(base64);
-    });
+    var dbStorageKey = "database";
+    var dbBlob = <Uint8Array>(await idbKeyval.get(dbStorageKey));
+    if (!dbBlob) {
+      console.log("database not found, downloading...");
+      var response = await this.databaseService.getData(url, ResponseContentType.Blob)
+      dbBlob = await this.zipService.getDatabaseBlob(response.blob());
+      await idbKeyval.set(dbStorageKey, dbBlob)
+    }
+    else {
+      console.log("database already exists in memory!");
+    }
   }
 }

@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { DatabaseComponent } from './database/database.component';
 import { DatabaseService } from "./database/database.service";
 import { HttpModule } from '@angular/http';
+import { ZipService } from "./shared/zip.service";
 
 @NgModule({
   declarations: [
@@ -17,7 +18,7 @@ import { HttpModule } from '@angular/http';
     AppRoutingModule,
     HttpModule
   ],
-  providers: [DatabaseService],
+  providers: [DatabaseService, ZipService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
