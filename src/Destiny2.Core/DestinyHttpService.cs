@@ -18,7 +18,7 @@ namespace Destiny2.Core
         {
             using (var handler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
             using (var client = new HttpClient(handler))
-            using (var message = GetRequestWithHeaders(url))
+            using (var message = CreateRequestWithHeaders(url))
             {
                 var responseMessage = await client.SendAsync(message);
                 var content = await responseMessage.Content.ReadAsStringAsync();
@@ -30,7 +30,7 @@ namespace Destiny2.Core
         {
             using (var handler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip })
             using (var client = new HttpClient(handler))
-            using (var message = GetRequestWithHeaders(url))
+            using (var message = CreateRequestWithHeaders(url))
             {
                 var responseMessage = await client.SendAsync(message);
                 var content = await responseMessage.Content.ReadAsByteArrayAsync();
@@ -38,7 +38,7 @@ namespace Destiny2.Core
             }
         }
 
-        private HttpRequestMessage GetRequestWithHeaders(string url)
+        private HttpRequestMessage CreateRequestWithHeaders(string url)
         {
             var message = new HttpRequestMessage(HttpMethod.Get, url);
             message.Headers.Add("X-API-Key", _apiKey);

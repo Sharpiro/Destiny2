@@ -13,8 +13,9 @@ namespace Destiny2.Core
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public IEnumerable<Dictionary<string, object>> ExecuteQuery(string query)
+        public List<Dictionary<string, object>> ExecuteQuery(string query)
         {
+            var list = new List<Dictionary<string, object>>();
             using (var conn = new SQLiteConnection(_connectionString))
             using (var command = conn.CreateCommand())
             {
@@ -36,10 +37,11 @@ namespace Destiny2.Core
                         {
                             dictionary.Add(colNames[i], reader[i]);
                         }
-                        yield return dictionary;
+                        list.Add(dictionary);
                     }
                 }
             }
+            return list;
         }
     }
 }
