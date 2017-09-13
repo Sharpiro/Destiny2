@@ -1,4 +1,19 @@
-<input type="text" [(ngModel)]="itemHash" />
-<button (click)="searchHash(itemHash)">Search</button> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+  crossorigin="anonymous">
 
-<p>{{json}}</p>
+<div class="container-fluid">
+  <div class="row" style="padding: 15px 0px 15px 0px">
+    <div class="col-12">
+      <input type="text" [(ngModel)]="itemHash" placeholder="item hash" />
+      <button (click)="searchHash(itemHash)">Search</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <div id="jsonEditorCode" style="height:85%"></div>
+    </div>
+    <div class="col-6">
+      <div id="jsonEditorView" style="height:85%"></div>
+    </div>
+  </div>
+</div>

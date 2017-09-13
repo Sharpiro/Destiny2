@@ -19,7 +19,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "styles.css"
+        "styles.css",
+        "../node_modules/jsoneditor/dist/jsoneditor.min.css"
       ],
       "scripts": [
         "./assets/lib/zipjs/zip.js"

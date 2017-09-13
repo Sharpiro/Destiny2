@@ -5,6 +5,8 @@ import { ResponseContentType } from "@angular/http"
 import { ZipService } from "../shared/zip.service";
 import * as sql from "sql.js"
 import { ActivatedRoute, Router } from '@angular/router';
+import JSONEditor from "jsoneditor";
+import { JSONEditorMode, JSONEditorOptions } from "jsoneditor";
 
 declare let zip;
 
@@ -18,11 +20,23 @@ export class DatabaseComponent implements OnInit {
   public routeParam: string;
   private itemDictionary: any = {};
   private itemHash: string;
+  private jsonEditorCode: JSONEditor;
+  private jsonEditorView: JSONEditor;
 
   constructor(private destinyApiService: DestinyApiService, private zipService: ZipService, private route: ActivatedRoute,
     private router: Router) { }
 
   async ngOnInit() {
+
+    // var options: JSONEditorOptions = {
+    //   mode: "view",
+    //   modes: ['code', 'view']
+    // };
+    var codeContainer = document.getElementById("jsonEditorCode");
+    var viewContainer = document.getElementById("jsonEditorView");
+    this.jsonEditorCode = new JSONEditor(codeContainer, { mode: "code" });
+    this.jsonEditorView = new JSONEditor(viewContainer, { mode: "view" });
+
     this.route.params.subscribe(params => {
       this.routeParam = params['hash']; // --> Name must match wanted parameter
       this.itemHash = this.routeParam;
@@ -65,7 +79,9 @@ export class DatabaseComponent implements OnInit {
   public searchHash(hash: number) {
     console.log(`searching hash '${hash}'...`);
     var data = this.itemDictionary[hash];
-    this.json = !data ? "Not Found" : JSON.stringify(this.itemDictionary[hash]);
+    this.jsonEditorCode.set(data);
+    this.jsonEditorView.set(data);
+    this.json = !data ? "Not Found" : JSON.stringify(data);
     this.router.navigate([`database/${hash}`]);
   }
 }
