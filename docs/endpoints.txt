@@ -18,6 +18,7 @@ API
         https://www.bungie.net/common/destiny2_content/sqlite/en/world_sql_content_281de46e3cd73e5747595936fd2dffa9.content
 
 RESOURCES
+    https://www.bungie.net/en/Application
     https://www.bungie.net/platform/destiny2/help/
     https://github.com/Sharpiro/Destiny/blob/dev/Destiny.Core/DataLayer/DestinyConstants.cs
     https://github.com/DestinyItemManager/DIM/blob/afcff8ebf2807db47cb86dcacbff78cd9c30ad6a/src/app/bungie-api/destiny-component-type.js

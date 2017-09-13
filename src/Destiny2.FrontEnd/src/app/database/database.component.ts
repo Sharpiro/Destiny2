@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from "./database.service";
+import { DestinyApiService } from "../shared/destinyApi.service";
 import * as idbKeyval from 'idb-keyval';
 import { ResponseContentType } from "@angular/http"
 import { ZipService } from "../shared/zip.service";
 
-declare var zip;
+declare let zip;
 
 @Component({
   selector: 'app-database',
@@ -13,26 +13,31 @@ declare var zip;
 })
 export class DatabaseComponent implements OnInit {
 
-  constructor(private databaseService: DatabaseService, private zipService: ZipService) { }
+  constructor(private destinyApiService: DestinyApiService, private zipService: ZipService) { }
 
   async ngOnInit() {
-    // const url = "https://sharpirotestfunctions.azurewebsites.net/api/FacebookCallback";
-    // const url = "https://www.bungie.net/Platform/Destiny2/Manifest/";
-    // const url = "https://www.bungie.net/common/destiny2_content/sqlite/en/world_sql_content_281de46e3cd73e5747595936fd2dffa9.content";
-    const url = "http://localhost:4200/assets/test.zip";
-
     zip.workerScriptsPath = "/assets/lib/zipjs/";
 
-    var dbStorageKey = "database";
-    var dbBlob = <Uint8Array>(await idbKeyval.get(dbStorageKey));
-    if (!dbBlob) {
-      console.log("database not found, downloading...");
-      var response = await this.databaseService.getData(url, ResponseContentType.Blob)
-      dbBlob = await this.zipService.getDatabaseBlob(response.blob());
+    // let temp = await this.destinyApiService.searchPlayer("sharpirox");
+    // console.log(temp);
+
+    let manifestResponse = await this.destinyApiService.getManifest();
+    let worldDbPath = manifestResponse.json().Response.mobileWorldContentPaths.en;
+    let cachedData = localStorage.getItem("dbPath");
+    let hasChanged = worldDbPath !== cachedData;
+    console.log(worldDbPath);
+
+    let dbStorageKey = "database";
+    let dbBlob = <Uint8Array>(await idbKeyval.get(dbStorageKey));
+    if (hasChanged || !dbBlob) {
+      if (hasChanged) console.log("database has been updated, downloading...");
+      if (!dbBlob) console.log("database not found in cache, downloading...");
+
+      let databaseResponse = await this.destinyApiService.getDatabase(worldDbPath);
+      dbBlob = await this.zipService.getDatabaseBlob(databaseResponse.blob());
       await idbKeyval.set(dbStorageKey, dbBlob)
+      localStorage.setItem("dbPath", worldDbPath);
     }
-    else {
-      console.log("database already exists in memory!");
-    }
+    else console.log("database already exists in memory!");
   }
 }
