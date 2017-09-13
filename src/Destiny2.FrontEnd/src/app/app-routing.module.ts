@@ -5,6 +5,7 @@ import { DatabaseComponent } from "./database/database.component";
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'database' },
   { path: "database", component: DatabaseComponent },
+  { path: "database/:hash", component: DatabaseComponent },
 ];
 
 @NgModule({

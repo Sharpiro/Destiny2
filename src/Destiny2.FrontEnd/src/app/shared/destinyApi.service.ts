@@ -9,15 +9,15 @@ export class DestinyApiService {
 
   constructor(private http: Http) { }
 
-  public getManifest(responseType = ResponseContentType.Json) {
+  public getManifest() {
     const url = `${this.baseApiUrl}/Manifest/`;
-    return this.http.get(url).toPromise();
+    return this.http.get(url, { headers: this.getDestinyHeaders() }).toPromise();
   }
 
   public getDatabase(dbPath: string) {
     const url = `${this.baseContentUrl}${dbPath}`;
     // const url = "http://localhost:4200/assets/test.zip";
-    return this.http.get(url).toPromise();
+    return this.http.get(url, { responseType: ResponseContentType.Blob }).toPromise();
   }
 
   public searchPlayer(playerName: string, platform = 1) {
