@@ -8,6 +8,7 @@ import { HttpModule } from '@angular/http';
 import { ZipService } from "./shared/zip.service";
 import { DestinyApiService } from "./shared/destinyApi.service";
 import { FormsModule } from '@angular/forms';
+import { DatabaseService } from "./shared/database.service";
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { FormsModule } from '@angular/forms';
     HttpModule,
     FormsModule
   ],
-  providers: [DestinyApiService, ZipService],
+  providers: [DestinyApiService, ZipService, DatabaseService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

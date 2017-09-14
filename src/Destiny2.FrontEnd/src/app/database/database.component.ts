@@ -7,6 +7,7 @@ import * as sql from "sql.js"
 import { ActivatedRoute, Router } from '@angular/router';
 import JSONEditor from "jsoneditor";
 import { JSONEditorMode, JSONEditorOptions } from "jsoneditor";
+import { DatabaseService } from "../shared/database.service";
 
 declare let zip;
 
@@ -16,30 +17,27 @@ declare let zip;
   styleUrls: ['./database.component.css']
 })
 export class DatabaseComponent implements OnInit {
-  public json: string;
-  public routeParam: string;
-  private itemDictionary: any = {};
+  private tablesDictionary: any = {};
   private itemHash: string;
   private jsonEditorCode: JSONEditor;
   private jsonEditorView: JSONEditor;
+  private tableNames: string[] = [];
+  private currentTable;
+  private database;
 
   constructor(private destinyApiService: DestinyApiService, private zipService: ZipService, private route: ActivatedRoute,
-    private router: Router) { }
+    private router: Router, private databaseService: DatabaseService) { }
 
   async ngOnInit() {
-
-    // var options: JSONEditorOptions = {
-    //   mode: "view",
-    //   modes: ['code', 'view']
-    // };
     var codeContainer = document.getElementById("jsonEditorCode");
     var viewContainer = document.getElementById("jsonEditorView");
     this.jsonEditorCode = new JSONEditor(codeContainer, { mode: "code" });
     this.jsonEditorView = new JSONEditor(viewContainer, { mode: "view" });
 
     this.route.params.subscribe(params => {
-      this.routeParam = params['hash']; // --> Name must match wanted parameter
-      this.itemHash = this.routeParam;
+      this.currentTable = params['table'] ? params['table'] : this.currentTable;
+      this.itemHash = params['hash'];
+      console.log(`updating route params to: '${this.currentTable}/${this.itemHash}'`);
     });
 
     zip.workerScriptsPath = "/assets/lib/zipjs/";
@@ -63,25 +61,45 @@ export class DatabaseComponent implements OnInit {
     else console.log(`using cached database: '${cachedWorldDbPath}'`);
 
     // get data from sql
-    var db = new sql.Database(dbBlob);
-    const rows = db.exec(`SELECT json FROM DestinyInventoryItemDefinition`);
-    rows[0].values.forEach(value => {
+    this.database = new sql.Database(dbBlob);
 
-      var data = JSON.parse(value[0]);
-      this.itemDictionary[data.hash] = data;
-    });
-    if (this.routeParam) this.searchHash(+this.routeParam);
+    this.tableNames = this.database.exec("SELECT name FROM sqlite_master")[0].values
+      .map(value => {
+        return value[0];
+      });
+
+    // if (this.currentTable) this.lazyLoadTable(this.currentTable);
+    if (this.itemHash) this.searchHash(+this.itemHash);
 
     // 1345867571 -- coldheart
     // 2903592984 --lionheart
   }
 
   public searchHash(hash: number) {
-    console.log(`searching hash '${hash}'...`);
-    var data = this.itemDictionary[hash];
+    console.log(`searching hash '${hash}' on ${this.currentTable}...`);
+    if (hash)
+      this.router.navigate([`database/${this.currentTable}/${hash}`]);
+    else
+      this.router.navigate([`database/${this.currentTable}`]);
+    if (!this.tablesDictionary[this.currentTable]) this.lazyLoadTable(this.currentTable);
+    var data = this.tablesDictionary[this.currentTable][hash];
+    data = !data ? {} : data;
     this.jsonEditorCode.set(data);
     this.jsonEditorView.set(data);
-    this.json = !data ? "Not Found" : JSON.stringify(data);
-    this.router.navigate([`database/${hash}`]);
+  }
+
+  public lazyLoadTable(tableName: string) {
+    console.log(`lazily loading '${tableName}' table into memory`);
+    const rows = this.database.exec(`SELECT json FROM ${tableName}`);
+    this.tablesDictionary[tableName] = {};
+    rows[0].values.forEach(value => {
+      var data = JSON.parse(value[0]);
+      this.tablesDictionary[tableName][data.hash] = data;
+    });
+  }
+
+  public onTableChange(table: string) {
+    console.log(`table changed to: '${table}'`);
+    this.router.navigate([`database/${this.currentTable}/${this.itemHash}`]);
   }
 }

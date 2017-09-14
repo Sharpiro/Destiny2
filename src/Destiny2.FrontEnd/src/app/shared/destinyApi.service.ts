@@ -6,6 +6,7 @@ import 'rxjs/Rx';
 export class DestinyApiService {
   private baseApiUrl = "https://www.bungie.net/Platform/Destiny2";
   private baseContentUrl = "https://www.bungie.net";
+  private testField = 1;
 
   constructor(private http: Http) { }
 

@@ -3,9 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { DatabaseComponent } from "./database/database.component";
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'database' },
-  { path: "database", component: DatabaseComponent },
-  { path: "database/:hash", component: DatabaseComponent },
+  { path: '', pathMatch: 'full', redirectTo: 'database/DestinyInventoryItemDefinition' },
+  { path: 'database', pathMatch: 'full', redirectTo: 'database/DestinyInventoryItemDefinition' },
+   { path: "database/:table", component: DatabaseComponent },
+  { path: "database/:table/:hash", component: DatabaseComponent },
 ];
 
 @NgModule({
