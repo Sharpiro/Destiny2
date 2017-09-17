@@ -8,6 +8,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
     "typeRoots": [
       "node_modules/@types"
     ],

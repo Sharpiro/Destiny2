@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 
-declare var zip;
+declare let zip;
 
 @Injectable()
 export class ZipService {
 
-  constructor() { }
+  constructor() { 
+    zip.workerScriptsPath = "/assets/lib/zipjs/";
+  }
 
   public getDatabaseBlob(archiveBlob: Blob): Promise<Uint8Array> {
     return new Promise((res, rej) => {
