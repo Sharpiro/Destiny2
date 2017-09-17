@@ -16,10 +16,11 @@ import { DatabaseService } from '../shared/database.service';
 })
 export class DatabaseComponent implements OnInit {
   private tablesDictionary: any = {};
-  private itemHash: string;
   private jsonEditorCode: JSONEditor;
   private jsonEditorView: JSONEditor;
   private tableNames: string[] = [];
+  private currentHash: string;
+  private currentViewHash: string;
   private currentTable;
 
   constructor(private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService) { }
@@ -31,61 +32,52 @@ export class DatabaseComponent implements OnInit {
     this.jsonEditorCode = new JSONEditor(codeContainer, { mode: "code" });
     this.jsonEditorView = new JSONEditor(viewContainer, { mode: "view" });
 
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe(async params => {
       this.currentTable = params['table'] ? params['table'] : this.currentTable;
-      this.itemHash = params['hash'];
-      console.log(`updating route params to: '${this.currentTable}/${this.itemHash}'`);
+      const hashChanged = params['hash'] !== this.currentHash;
+      this.currentHash = params['hash'];
+      this.currentViewHash = this.currentHash;
+      console.log(`route updated to: '${this.currentTable}/${this.currentHash}'`);
+      // if (this.currentHash && this.currentTable) await this.lazyLoadTable(this.currentTable);--lags ui table dropdown
+      if (!hashChanged) return;
+      if (this.currentHash) await this.completeHashSearch(this.currentHash);
     });
 
-    console.log(this.databaseService);
-
-    // this.tableNames = this.databaseService.getTables();
-    // zip.workerScriptsPath = "/assets/lib/zipjs/";
-
-    // this.tableNames = this.databaseService.getTableNames();
-    // this.lazyLoadTable(this.currentTable);
-
-    // get data from sql
-    // this.database = new sql.Database(dbBlob);
-
-    // this.tableNames = this.database.exec("SELECT name FROM sqlite_master")[0].values
-    //   .map(value => {
-    //     return value[0];
-    //   });
-
-    // if (this.currentTable) this.lazyLoadTable(this.currentTable);
-    // if (this.itemHash) this.searchHash(+this.itemHash);
+    this.tableNames = this.databaseService.getTableNames();
 
     // 1345867571 -- coldheart
     // 2903592984 --lionheart
   }
 
-  // public searchHash(hash: number) {
-  //   console.log(`searching hash '${hash}' on ${this.currentTable}...`);
-  //   if (hash)
-  //     this.router.navigate([`database/${this.currentTable}/${hash}`]);
-  //   else
-  //     this.router.navigate([`database/${this.currentTable}`]);
-  //   // this.lazyLoadTable(this.currentTable);
-  //   var data = this.tablesDictionary[this.currentTable][hash];
-  //   data = !data ? { res: "no data" } : data;
-  //   this.jsonEditorCode.set(data);
-  //   this.jsonEditorView.set(data);
-  // }
+  public async initiateHashSearch(hash: string) {
+    console.log(`searching hash '${hash}' on ${this.currentTable}...`);
+    var navigateResponse: boolean;
+    if (hash)
+      navigateResponse = await this.router.navigate([`database/${this.currentTable}/${hash}`]);
+    else
+      navigateResponse = await this.router.navigate([`database/${this.currentTable}`]);
 
-  // private lazyLoadTable(tableName: string) {
-  //   console.log(`lazily loading '${tableName}' table into memory`);
-  //   if (!this.tablesDictionary[this.currentTable])
-  //   this.tablesDictionary[tableName] = this.databaseService.getTable(tableName);
-  // }
+    if (navigateResponse) return;
+    await this.completeHashSearch(hash);
+  }
 
-  // private lazyLoadDatabase() {
+  private async completeHashSearch(hash: string) {
+    await this.lazyLoadTable(this.currentTable);
+    var data = this.tablesDictionary[this.currentTable][hash];
+    data = !data ? { res: "no data" } : data;
+    this.jsonEditorCode.set(data);
+    this.jsonEditorView.set(data);
+  }
 
-  // }
+  private async lazyLoadTable(tableName: string) {
+    if (this.tablesDictionary[this.currentTable]) return;
+    console.log(`lazily loading '${tableName}' table into memory`);
+    this.tablesDictionary[tableName] = await this.databaseService.getTable(tableName);
+  }
 
-  // public onTableChange(table: string) {
-  //   console.log(`table changed to: '${table}'`);
-  //   this.router.navigate([`database/${this.currentTable}/${this.itemHash}`]);
-  //   this.lazyLoadTable(table);
-  // }
+  public async onTableChange(table: string) {
+    console.log(`table changed to: '${table}'`);
+    var navResult = await this.currentHash ? this.router.navigate([`database/${this.currentTable}/${this.currentHash}`])
+      : await this.router.navigate([`database/${this.currentTable}`]);
+  }
 }

@@ -27,13 +27,15 @@ export class DatabaseService {
   }
 
   public getTable(tableName: string) {
-    const rows = this.sqlLiteDatabase.exec(`SELECT json FROM ${tableName}`);
-    let dictionary = {};
-    rows[0].values.forEach(value => {
-      var data = JSON.parse(value[0]);
-      dictionary[data.hash] = data;
+    return new Promise((res, rej) => {
+      const rows = this.sqlLiteDatabase.exec(`SELECT json FROM ${tableName}`);
+      let dictionary = {};
+      rows[0].values.forEach(value => {
+        var data = JSON.parse(value[0]);
+        dictionary[data.hash] = data;
+      });
+      res(dictionary);
     });
-    return dictionary;
   }
 
   public async load(destinyApiService: DestinyApiService, zipService: ZipService) {
