@@ -38,28 +38,12 @@ export class DatabaseComponent implements OnInit {
     });
 
     console.log(this.databaseService);
-    console.log(this.databaseService.test());
 
     // this.tableNames = this.databaseService.getTables();
     // zip.workerScriptsPath = "/assets/lib/zipjs/";
 
-    // let manifestResponse = await this.destinyApiService.getManifest();
-    // let newWorldDbPath = manifestResponse.json().Response.mobileWorldContentPaths.en;
-    // let cachedWorldDbPath = localStorage.getItem("dbPath");
-    // let hasChanged = newWorldDbPath !== cachedWorldDbPath;
-
-    // let dbStorageKey = "database";
-    // let dbBlob = <Uint8Array>(await idbKeyval.get(dbStorageKey));
-    // if (hasChanged || !dbBlob) {
-    //   if (hasChanged) console.log("database has been updated, downloading...");
-    //   if (!dbBlob) console.log("database not found in cache, downloading...");
-
-    //   let databaseResponse = await this.destinyApiService.getDatabase(newWorldDbPath);
-    //   dbBlob = await this.zipService.getDatabaseBlob(databaseResponse.blob());
-    //   await idbKeyval.set(dbStorageKey, dbBlob)
-    //   localStorage.setItem("dbPath", newWorldDbPath);
-    // }
-    // else console.log(`using cached database: '${cachedWorldDbPath}'`);
+    // this.tableNames = this.databaseService.getTableNames();
+    // this.lazyLoadTable(this.currentTable);
 
     // get data from sql
     // this.database = new sql.Database(dbBlob);
@@ -82,22 +66,17 @@ export class DatabaseComponent implements OnInit {
   //     this.router.navigate([`database/${this.currentTable}/${hash}`]);
   //   else
   //     this.router.navigate([`database/${this.currentTable}`]);
-  //   if (!this.tablesDictionary[this.currentTable]) this.lazyLoadTable(this.currentTable);
+  //   // this.lazyLoadTable(this.currentTable);
   //   var data = this.tablesDictionary[this.currentTable][hash];
-  //   data = !data ? {} : data;
+  //   data = !data ? { res: "no data" } : data;
   //   this.jsonEditorCode.set(data);
   //   this.jsonEditorView.set(data);
   // }
 
   // private lazyLoadTable(tableName: string) {
   //   console.log(`lazily loading '${tableName}' table into memory`);
-  //   // if (!this.database) this.lazyLoadDatabase();
-  //   const rows = this.database.exec(`SELECT json FROM ${tableName}`);
-  //   this.tablesDictionary[tableName] = {};
-  //   rows[0].values.forEach(value => {
-  //     var data = JSON.parse(value[0]);
-  //     this.tablesDictionary[tableName][data.hash] = data;
-  //   });
+  //   if (!this.tablesDictionary[this.currentTable])
+  //   this.tablesDictionary[tableName] = this.databaseService.getTable(tableName);
   // }
 
   // private lazyLoadDatabase() {
@@ -107,5 +86,6 @@ export class DatabaseComponent implements OnInit {
   // public onTableChange(table: string) {
   //   console.log(`table changed to: '${table}'`);
   //   this.router.navigate([`database/${this.currentTable}/${this.itemHash}`]);
+  //   this.lazyLoadTable(table);
   // }
 }
