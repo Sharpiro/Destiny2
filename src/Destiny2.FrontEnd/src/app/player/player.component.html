@@ -1,0 +1,13 @@
+<div class="container-fluid">
+  <div class="row" style="padding: 15px 0px 15px 0px">
+    <div class="col-3">
+      <select [(ngModel)]="currentPlatformKVP" class="form-control" (ngModelChange)="onPlatformChange(currentPlatformKVP)">
+          <option *ngFor="let platformKVP of platformDropDown" [ngValue]="platformKVP.value">{{platformKVP.key}}</option>
+        </select>
+    </div>
+    <div class="col-9">
+      <input type="text" [(ngModel)]="playerName">
+      <button (click)="searchPlayer(playerName)">Search</button>
+    </div>
+  </div>
+</div>
