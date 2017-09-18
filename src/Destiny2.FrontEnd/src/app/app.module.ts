@@ -11,12 +11,14 @@ import { FormsModule } from '@angular/forms';
 import { databaseServiceProvider } from './shared/database.service.provider';
 import { DatabaseService } from './shared/database.service';
 import { PlayerComponent } from './player/player.component';
+import { KeysPipe } from './shared/keys.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     DatabaseComponent,
-    PlayerComponent
+    PlayerComponent,
+    KeysPipe
   ],
   imports: [
     BrowserModule,

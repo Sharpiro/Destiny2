@@ -1,12 +1,15 @@
 <div class="container-fluid">
   <div class="row" style="padding: 15px 0px 15px 0px">
     <div class="col-3">
-      <select [(ngModel)]="currentPlatformKVP" class="form-control" (ngModelChange)="onPlatformChange(currentPlatformKVP)">
-          <option *ngFor="let platformKVP of platformDropDown" [ngValue]="platformKVP.value">{{platformKVP.key}}</option>
-        </select>
+      <!-- <select (change)="onPlatformChange($event.target.selectedIndex)" class="form-control">
+          <option *ngFor="let platformKVP of platforms | keys" [selected]="platformKVP.key == currentPlatformKVP" [ngValue]="platformKVP.key">{{platformKVP.value}}</option>
+      </select> -->
+      <select [(ngModel)]="currentPlatformKVP" (ngModelChange)="onPlatformChange()" class="form-control">
+          <option *ngFor="let platformKVP of platforms" [ngValue]="platformKVP.key">{{platformKVP.value}}</option>
+      </select>
     </div>
-    <div class="col-9">
-      <input type="text" [(ngModel)]="playerName">
+    <div class="col-3">
+      <input type="text" [(ngModel)]="playerName" class="form-control">
       <button (click)="searchPlayer(playerName)">Search</button>
     </div>
   </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DestinyApiService } from '../shared/destinyApi.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-player',
@@ -10,17 +11,26 @@ export class PlayerComponent implements OnInit {
   private playerName = "sharpirox";
   private currentPlayer: Player;
   private currentPlatformKVP = MembershipType.XBOX;
-  private temp = MembershipType;
-  private platformDropDown = [
-    { key: MembershipType[MembershipType.PS], value: MembershipType.PS },
-    { key: MembershipType[MembershipType.XBOX], value: MembershipType.XBOX },
-    { key: MembershipType[MembershipType.PC], value: MembershipType.PC }
+  // private platforms = MembershipType;
+  private platforms = [
+    { value: MembershipType[MembershipType.PS], key: MembershipType.PS },
+    { value: MembershipType[MembershipType.XBOX], key: MembershipType.XBOX },
+    { value: MembershipType[MembershipType.PC], key: MembershipType.PC }
   ];
 
-  constructor(private destinyApiService: DestinyApiService) { }
+  constructor(private destinyApiService: DestinyApiService, private router: Router, private route: ActivatedRoute) { }
 
   async ngOnInit() {
+    this.route.params.subscribe(async params => {
+      var platformString = params["membershipType"].toUpperCase();
+      var platform = +MembershipType[platformString];
 
+      if (!platform) {
+        var navigateResponse = await this.router.navigate([`player`]);
+        return;
+      }
+      this.currentPlatformKVP = platform;
+    });
   }
 
   public async searchPlayer(playerName: string) {
@@ -38,8 +48,8 @@ export class PlayerComponent implements OnInit {
     console.log(this.currentPlayer);
   }
 
-  public onPlatformChange(currentPlatform) {
-    console.log(currentPlatform);
+  public onPlatformChange() {
+    console.log(this.currentPlatformKVP);
   }
 }
 

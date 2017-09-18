@@ -8,8 +8,8 @@ const routes: Routes = [
   { path: 'database', pathMatch: 'full', redirectTo: 'database/DestinyInventoryItemDefinition' },
    { path: "database/:table", component: DatabaseComponent },
   { path: "database/:table/:hash", component: DatabaseComponent },
-  { path: "player", component: PlayerComponent },
-  { path: "player/:membershipType", pathMatch: 'full', redirectTo: 'player' },
+  { path: "player", pathMatch: 'full', redirectTo: 'player/XBOX' },
+  { path: "player/:membershipType", component: PlayerComponent },
   { path: "player/:membershipType/:displayName", component: PlayerComponent },
 ];
 
