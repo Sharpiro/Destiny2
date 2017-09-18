@@ -23,7 +23,6 @@ export class DestinyApiService {
 
   public searchPlayer(playerName: string, platform = 1) {
     const url = `${this.baseApiUrl}/SearchDestinyPlayer/${platform}/${playerName}/`;
-    // const url = "http://localhost:4200/assets/test.zip";
     return this.http.get(url, { headers: this.getDestinyHeaders() }).toPromise();
   }
 

@@ -8,8 +8,8 @@
     <div class="col-8">
       <!-- <form class="form-inline">
       </form> -->
-        <input type="text" class="form-control form-horizontal" style="width:15%" name="itemHash" [(ngModel)]="itemHash" placeholder="item hash" />
-        <button (click)="searchHash(itemHash)">Search</button>
+        <input type="text" class="form-control form-horizontal" style="width:25%" name="currentViewHash" [(ngModel)]="currentViewHash" placeholder="item hash" />
+        <button (click)="initiateHashSearch(currentViewHash)">Search</button>
     </div>
   </div>
   <div class="row">

@@ -7,9 +7,7 @@ import * as sql from "sql.js"
 import { ActivatedRoute, Router } from '@angular/router';
 import JSONEditor from "jsoneditor";
 import { JSONEditorMode, JSONEditorOptions } from "jsoneditor";
-import { DatabaseService } from "../shared/database.service";
-
-declare let zip;
+import { DatabaseService } from '../shared/database.service';
 
 @Component({
   selector: 'app-database',
@@ -18,88 +16,68 @@ declare let zip;
 })
 export class DatabaseComponent implements OnInit {
   private tablesDictionary: any = {};
-  private itemHash: string;
   private jsonEditorCode: JSONEditor;
   private jsonEditorView: JSONEditor;
   private tableNames: string[] = [];
+  private currentHash: string;
+  private currentViewHash: string;
   private currentTable;
-  private database;
 
-  constructor(private destinyApiService: DestinyApiService, private zipService: ZipService, private route: ActivatedRoute,
-    private router: Router, private databaseService: DatabaseService) { }
+  constructor(private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService) { }
 
   async ngOnInit() {
+    console.log("Initializing DatabaseComponent");
     var codeContainer = document.getElementById("jsonEditorCode");
     var viewContainer = document.getElementById("jsonEditorView");
     this.jsonEditorCode = new JSONEditor(codeContainer, { mode: "code" });
     this.jsonEditorView = new JSONEditor(viewContainer, { mode: "view" });
 
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe(async params => {
       this.currentTable = params['table'] ? params['table'] : this.currentTable;
-      this.itemHash = params['hash'];
-      console.log(`updating route params to: '${this.currentTable}/${this.itemHash}'`);
+      const hashChanged = params['hash'] !== this.currentHash;
+      this.currentHash = params['hash'];
+      this.currentViewHash = this.currentHash;
+      console.log(`route updated to: '${this.currentTable}/${this.currentHash}'`);
+      // if (this.currentHash && this.currentTable) await this.lazyLoadTable(this.currentTable);--lags ui table dropdown
+      if (!hashChanged) return;
+      if (this.currentHash) await this.completeHashSearch(this.currentHash);
     });
 
-    zip.workerScriptsPath = "/assets/lib/zipjs/";
-
-    let manifestResponse = await this.destinyApiService.getManifest();
-    let newWorldDbPath = manifestResponse.json().Response.mobileWorldContentPaths.en;
-    let cachedWorldDbPath = localStorage.getItem("dbPath");
-    let hasChanged = newWorldDbPath !== cachedWorldDbPath;
-
-    let dbStorageKey = "database";
-    let dbBlob = <Uint8Array>(await idbKeyval.get(dbStorageKey));
-    if (hasChanged || !dbBlob) {
-      if (hasChanged) console.log("database has been updated, downloading...");
-      if (!dbBlob) console.log("database not found in cache, downloading...");
-
-      let databaseResponse = await this.destinyApiService.getDatabase(newWorldDbPath);
-      dbBlob = await this.zipService.getDatabaseBlob(databaseResponse.blob());
-      await idbKeyval.set(dbStorageKey, dbBlob)
-      localStorage.setItem("dbPath", newWorldDbPath);
-    }
-    else console.log(`using cached database: '${cachedWorldDbPath}'`);
-
-    // get data from sql
-    this.database = new sql.Database(dbBlob);
-
-    this.tableNames = this.database.exec("SELECT name FROM sqlite_master")[0].values
-      .map(value => {
-        return value[0];
-      });
-
-    // if (this.currentTable) this.lazyLoadTable(this.currentTable);
-    if (this.itemHash) this.searchHash(+this.itemHash);
+    this.tableNames = this.databaseService.getTableNames();
 
     // 1345867571 -- coldheart
     // 2903592984 --lionheart
   }
 
-  public searchHash(hash: number) {
+  public async initiateHashSearch(hash: string) {
     console.log(`searching hash '${hash}' on ${this.currentTable}...`);
+    var navigateResponse: boolean;
     if (hash)
-      this.router.navigate([`database/${this.currentTable}/${hash}`]);
+      navigateResponse = await this.router.navigate([`database/${this.currentTable}/${hash}`]);
     else
-      this.router.navigate([`database/${this.currentTable}`]);
-    if (!this.tablesDictionary[this.currentTable]) this.lazyLoadTable(this.currentTable);
+      navigateResponse = await this.router.navigate([`database/${this.currentTable}`]);
+
+    if (navigateResponse) return;
+    await this.completeHashSearch(hash);
+  }
+
+  private async completeHashSearch(hash: string) {
+    await this.lazyLoadTable(this.currentTable);
     var data = this.tablesDictionary[this.currentTable][hash];
-    data = !data ? {} : data;
+    data = !data ? { res: "no data" } : data;
     this.jsonEditorCode.set(data);
     this.jsonEditorView.set(data);
   }
 
-  public lazyLoadTable(tableName: string) {
+  private async lazyLoadTable(tableName: string) {
+    if (this.tablesDictionary[this.currentTable]) return;
     console.log(`lazily loading '${tableName}' table into memory`);
-    const rows = this.database.exec(`SELECT json FROM ${tableName}`);
-    this.tablesDictionary[tableName] = {};
-    rows[0].values.forEach(value => {
-      var data = JSON.parse(value[0]);
-      this.tablesDictionary[tableName][data.hash] = data;
-    });
+    this.tablesDictionary[tableName] = await this.databaseService.getTable(tableName);
   }
 
-  public onTableChange(table: string) {
+  public async onTableChange(table: string) {
     console.log(`table changed to: '${table}'`);
-    this.router.navigate([`database/${this.currentTable}/${this.itemHash}`]);
+    var navResult = await this.currentHash ? this.router.navigate([`database/${this.currentTable}/${this.currentHash}`])
+      : await this.router.navigate([`database/${this.currentTable}`]);
   }
 }
