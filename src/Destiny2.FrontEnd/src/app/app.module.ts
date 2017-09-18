@@ -12,13 +12,15 @@ import { databaseServiceProvider } from './shared/database.service.provider';
 import { DatabaseService } from './shared/database.service';
 import { PlayerComponent } from './player/player.component';
 import { KeysPipe } from './shared/keys.pipe';
+import { HashPipe } from './shared/hash.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     DatabaseComponent,
     PlayerComponent,
-    KeysPipe
+    KeysPipe,
+    HashPipe
   ],
   imports: [
     BrowserModule,
