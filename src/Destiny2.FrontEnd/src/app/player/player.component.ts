@@ -43,6 +43,7 @@ export class PlayerComponent implements OnInit {
   public async beginSearchPlayer(playerName: string) {
     if (!playerName) return;
     console.log(`beginning searching player '${playerName}...`);
+    this.characters = null;
     var platformString = MembershipType[this.currentPlatformKVP];
     let navigateResponse = await this.router.navigate([`player/${platformString}/${playerName}`]);
     if (navigateResponse) return;
@@ -52,16 +53,8 @@ export class PlayerComponent implements OnInit {
 
   private async finishSearchPlayer(playerName: string) {
     console.log(`finishing searching player '${playerName}...`);
-    let response = await this.destinyApiService.searchPlayer(playerName, this.currentPlatformKVP);
-    let body = response.json();
-    if (body.Response.length === 0) throw new Error("player not found");
-    let playerData = body.Response[0];
-    this.currentPlayer = new Player({
-      displayName: playerName,
-      membershipId: playerData.membershipId,
-      membershipType: playerData.membershipType
-    });
+    this.currentPlayer = await this.destinyApiService.searchPlayer(playerName, this.currentPlatformKVP);
     this.characters = await this.destinyApiService.getAccountDetails(this.currentPlayer.membershipType, this.currentPlayer.membershipId);
-    // console.log(this.characters);
+    console.log(this.characters);
   }
 }
