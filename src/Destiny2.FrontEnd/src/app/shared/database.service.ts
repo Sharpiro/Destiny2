@@ -15,10 +15,6 @@ export class DatabaseService {
 
   constructor() { }
 
-  public test() {
-    return "testing";
-  }
-
   public getTableNames(): string[] {
     return this.sqlLiteDatabase.exec("SELECT name FROM sqlite_master")[0].values
       .map(value => {

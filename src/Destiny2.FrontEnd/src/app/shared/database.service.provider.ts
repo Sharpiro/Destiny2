@@ -4,7 +4,7 @@ import * as sql from "sql.js"
 import { ZipService } from "./zip.service";
 import { APP_INITIALIZER } from "@angular/core";
 
-let databaseServiceFactory = (destinyApiService: DestinyApiService, zipService: ZipService,
+export let databaseServiceFactory = (destinyApiService: DestinyApiService, zipService: ZipService,
   databaseService: DatabaseService) => () => databaseService.load(destinyApiService, zipService);
 
 export let databaseServiceProvider =

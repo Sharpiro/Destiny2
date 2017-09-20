@@ -10,11 +10,18 @@ import { DestinyApiService } from "./shared/destinyApi.service";
 import { FormsModule } from '@angular/forms';
 import { databaseServiceProvider } from './shared/database.service.provider';
 import { DatabaseService } from './shared/database.service';
+import { PlayerComponent } from './player/player.component';
+import { KeysPipe } from './shared/keys.pipe';
+import { HashPipe } from './shared/hash.pipe';
+import { MemoryService } from "./shared/memory.service";
 
 @NgModule({
   declarations: [
     AppComponent,
-    DatabaseComponent
+    DatabaseComponent,
+    PlayerComponent,
+    KeysPipe,
+    HashPipe
   ],
   imports: [
     BrowserModule,
@@ -26,7 +33,8 @@ import { DatabaseService } from './shared/database.service';
     DestinyApiService,
     ZipService,
     DatabaseService,
-    databaseServiceProvider],
+    databaseServiceProvider,
+    MemoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

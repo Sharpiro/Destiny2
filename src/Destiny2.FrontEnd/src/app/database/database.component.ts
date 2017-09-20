@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import JSONEditor from "jsoneditor";
 import { JSONEditorMode, JSONEditorOptions } from "jsoneditor";
 import { DatabaseService } from '../shared/database.service';
+import { MemoryService } from "../shared/memory.service";
 
 @Component({
   selector: 'app-database',
@@ -15,7 +16,6 @@ import { DatabaseService } from '../shared/database.service';
   styleUrls: ['./database.component.css']
 })
 export class DatabaseComponent implements OnInit {
-  private tablesDictionary: any = {};
   private jsonEditorCode: JSONEditor;
   private jsonEditorView: JSONEditor;
   private tableNames: string[] = [];
@@ -23,7 +23,8 @@ export class DatabaseComponent implements OnInit {
   private currentViewHash: string;
   private currentTable;
 
-  constructor(private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService) { }
+  constructor(private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService,
+    private memoryService: MemoryService) { }
 
   async ngOnInit() {
     console.log("Initializing DatabaseComponent");
@@ -38,7 +39,7 @@ export class DatabaseComponent implements OnInit {
       this.currentHash = params['hash'];
       this.currentViewHash = this.currentHash;
       console.log(`route updated to: '${this.currentTable}/${this.currentHash}'`);
-      // if (this.currentHash && this.currentTable) await this.lazyLoadTable(this.currentTable);--lags ui table dropdown
+      // if (this.currentHash && this.currentTable) await this.lazyLoadTable(this.currentTable);--lags ui table dropdown, look into web workers
       if (!hashChanged) return;
       if (this.currentHash) await this.completeHashSearch(this.currentHash);
     });
@@ -62,22 +63,15 @@ export class DatabaseComponent implements OnInit {
   }
 
   private async completeHashSearch(hash: string) {
-    await this.lazyLoadTable(this.currentTable);
-    var data = this.tablesDictionary[this.currentTable][hash];
+    var data = await this.memoryService.getHash(hash, this.currentTable);
     data = !data ? { res: "no data" } : data;
     this.jsonEditorCode.set(data);
     this.jsonEditorView.set(data);
   }
 
-  private async lazyLoadTable(tableName: string) {
-    if (this.tablesDictionary[this.currentTable]) return;
-    console.log(`lazily loading '${tableName}' table into memory`);
-    this.tablesDictionary[tableName] = await this.databaseService.getTable(tableName);
-  }
-
   public async onTableChange(table: string) {
     console.log(`table changed to: '${table}'`);
-    var navResult = await this.currentHash ? this.router.navigate([`database/${this.currentTable}/${this.currentHash}`])
+    await this.currentHash ? this.router.navigate([`database/${this.currentTable}/${this.currentHash}`])
       : await this.router.navigate([`database/${this.currentTable}`]);
   }
 }

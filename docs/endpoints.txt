@@ -5,7 +5,7 @@ API
     search player
         https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/1/sharpirox/
     account info
-        https://www.bungie.net/Platform/Destiny2/1/Profile/4611686018432239086/
+        https://www.bungie.net/Platform/Destiny2/1/Profile/4611686018432239086/?components=Characters,CharacterEquipment
         https://www.bungie.net/Platform/Destiny2/1/Account/4611686018432239086/stats/
     character info
         https://www.bungie.net/Platform/Destiny2/1/Profile/4611686018432239086/Character/2305843009264120999/?components=Characters,CharacterEquipment

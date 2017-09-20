@@ -1,0 +1,41 @@
+<div class="container-fluid">
+  <div class="row" style="padding: 15px 0px 15px 0px">
+    <div class="col-3">
+      <select [(ngModel)]="currentPlatformKVP" class="form-control">
+          <option *ngFor="let platformKVP of platforms" [ngValue]="platformKVP.key">{{platformKVP.value}}</option>
+      </select>
+    </div>
+    <div class="col-3">
+      <input type="text" [(ngModel)]="playerName" class="form-control">
+    </div>
+    <div class="col-3">
+      <button (click)="beginSearchPlayer(playerName)" class="btn">Search</button>
+    </div>
+  </div>
+  <div class="row" *ngIf="characters">
+    <div class="col-md-2" *ngIf="characters[0]">
+      <span>{{characters[0].light}} {{characters[0].genderName}} {{characters[0].raceName}} {{characters[0].className}}</span>
+      <table>
+        <tr *ngFor="let item of characters[0].items">
+          <td><a href="http://db.destinytracker.com/d2/en/items/{{item.hash}}">{{item.displayProperties.name}}</a></td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-2 ml-auto" *ngIf="characters[1]">
+      <span>{{characters[1].light}} {{characters[1].genderName}} {{characters[1].raceName}} {{characters[1].className}}</span>
+      <table>
+        <tr *ngFor="let item of characters[1].items">
+          <td><a href="http://db.destinytracker.com/d2/en/items/{{item.hash}}">{{item.displayProperties.name}}</a></td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-2 ml-auto" *ngIf="characters[2]">
+      <span>{{characters[2].light}} {{characters[2].genderName}} {{characters[2].raceName}} {{characters[2].className}}</span>
+      <table>
+        <tr *ngFor="let item of characters[0].items">
+          <td><a href="http://db.destinytracker.com/d2/en/items/{{item.hash}}">{{item.displayProperties.name}}</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
