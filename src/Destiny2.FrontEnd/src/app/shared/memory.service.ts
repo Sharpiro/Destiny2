@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from "./database.service";
+import { DestinyApiService } from './destinyApi.service';
+import { DestinyHttpService } from './destiny-http.service';
 
 @Injectable()
 export class MemoryService {
   private tablesDictionary: any = {};
   private promises = {};
 
-  constructor(private databaseService: DatabaseService) { }
+  constructor(private databaseService: DatabaseService, private destinyHttpService: DestinyHttpService) { }
+
+  public getManifest() {
+    return this.destinyHttpService.getManifest();
+  }
 
   public async getHash(hash: string, tableName: string) {
     const tableNameLower = tableName.toLowerCase();
@@ -22,25 +28,5 @@ export class MemoryService {
       this.tablesDictionary[tableNameLower] = tableData;
     }
     return this.tablesDictionary[tableNameLower][hash];
-  }
-
-  public getGenderByType(type: number) {
-    return type === 0 ? "Male" : "Female";
-  }
-
-  public getClassByType(type: number) {
-    switch (type) {
-      case 0: return "Titan";
-      case 1: return "Hunter";
-      case 2: return "Warlock";
-    }
-  }
-
-  public getRaceByType(type: number) {
-    switch (type) {
-      case 0: return "Human";
-      case 1: return "Awoken";
-      case 2: return "Exo";
-    }
   }
 }

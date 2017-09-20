@@ -3,6 +3,7 @@ import { DestinyApiService } from './destinyApi.service';
 import { ZipService } from './zip.service';
 import * as idbKeyval from 'idb-keyval';
 import * as sql from "sql.js"
+import { DestinyHttpService } from './destiny-http.service';
 
 @Injectable()
 export class DatabaseService {
@@ -34,9 +35,9 @@ export class DatabaseService {
     });
   }
 
-  public async load(destinyApiService: DestinyApiService, zipService: ZipService) {
-    let manifestResponse = await destinyApiService.getManifest();
-    let newWorldDbPath = manifestResponse.json().Response.mobileWorldContentPaths.en;
+  public async load(destinyHttpService: DestinyHttpService, zipService: ZipService) {
+    let manifestResponse = await destinyHttpService.getManifest();
+    let newWorldDbPath = manifestResponse.mobileWorldContentPaths.en;
     let cachedWorldDbPath = localStorage.getItem("dbPath");
     let hasChanged = newWorldDbPath !== cachedWorldDbPath;
 
@@ -46,8 +47,8 @@ export class DatabaseService {
       if (hasChanged) console.log("database has been updated, downloading...");
       if (!dbBlob) console.log("database not found in cache, downloading...");
 
-      let databaseResponse = await destinyApiService.getDatabase(newWorldDbPath);
-      dbBlob = await zipService.getDatabaseBlob(databaseResponse.blob());
+      let databaseBlob = await destinyHttpService.getDatabase(newWorldDbPath);
+      dbBlob = await zipService.getDatabaseBlob(databaseBlob);
       await idbKeyval.set(dbStorageKey, dbBlob)
       localStorage.setItem("dbPath", newWorldDbPath);
     }

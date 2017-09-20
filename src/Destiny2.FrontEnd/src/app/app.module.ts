@@ -14,6 +14,8 @@ import { PlayerComponent } from './player/player.component';
 import { KeysPipe } from './shared/keys.pipe';
 import { HashPipe } from './shared/hash.pipe';
 import { MemoryService } from "./shared/memory.service";
+import { StaticDataService } from './shared/static-data.service';
+import { DestinyHttpService } from './shared/destiny-http.service';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { MemoryService } from "./shared/memory.service";
     ZipService,
     DatabaseService,
     databaseServiceProvider,
-    MemoryService],
+    MemoryService,
+    StaticDataService,
+    DestinyHttpService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

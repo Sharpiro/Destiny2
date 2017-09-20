@@ -1,16 +1,16 @@
 import { DatabaseService } from "./database.service";
-import { DestinyApiService } from "./destinyApi.service";
 import * as sql from "sql.js"
 import { ZipService } from "./zip.service";
 import { APP_INITIALIZER } from "@angular/core";
+import { DestinyHttpService } from "./destiny-http.service";
 
-export let databaseServiceFactory = (destinyApiService: DestinyApiService, zipService: ZipService,
-  databaseService: DatabaseService) => () => databaseService.load(destinyApiService, zipService);
+export let databaseServiceFactory = (destinyHttpService: DestinyHttpService, zipService: ZipService, databaseService: DatabaseService) =>
+  () => databaseService.load(destinyHttpService, zipService);
 
 export let databaseServiceProvider =
   {
     'provide': APP_INITIALIZER,
     'useFactory': databaseServiceFactory,
-    'deps': [DestinyApiService, ZipService, DatabaseService],
+    'deps': [DestinyHttpService, ZipService, DatabaseService],
     'multi': true,
   }
