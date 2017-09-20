@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Http, ResponseContentType, Headers } from "@angular/http"
 import 'rxjs/Rx';
 import { MembershipType, Player } from './models/player';
 import { StaticDataService } from './static-data.service';

@@ -1,9 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DestinyApiService } from "../shared/destinyApi.service";
-import * as idbKeyval from 'idb-keyval';
-import { ResponseContentType } from "@angular/http"
-import { ZipService } from "../shared/zip.service";
-import * as sql from "sql.js"
 import { ActivatedRoute, Router } from '@angular/router';
 import JSONEditor from "jsoneditor";
 import { JSONEditorMode, JSONEditorOptions } from "jsoneditor";
@@ -27,7 +22,7 @@ export class DatabaseComponent implements OnInit {
     private memoryService: MemoryService) { }
 
   async ngOnInit() {
-    console.log("Initializing DatabaseComponent");
+    // console.log("Initializing DatabaseComponent");
     var codeContainer = document.getElementById("jsonEditorCode");
     var viewContainer = document.getElementById("jsonEditorView");
     this.jsonEditorCode = new JSONEditor(codeContainer, { mode: "code" });

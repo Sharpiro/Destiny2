@@ -9,6 +9,6 @@ export class AppComponent implements OnInit {
   constructor() { }
   
   ngOnInit() {
-    console.log("initializing app.............");
+    // console.log("initializing app.............");
   }
 }
